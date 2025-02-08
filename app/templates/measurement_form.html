@@ -1,0 +1,50 @@
+{% block content %}
+<div class="container">
+    <h2 class="text-center">Suit Measurement Form</h2>
+    <form method="POST" action="{{ url_for('app_routes.measurement_form') }}">
+        {{ form.hidden_tag() }}
+
+        <div class="mb-3">
+            <label for="chest" class="form-label">{{ form.chest.label }}</label>
+            {{ form.chest(class="form-control", id="chest") }}
+        </div>
+
+        <div class="mb-3">
+            <label for="waist" class="form-label">{{ form.waist.label }}</label>
+            {{ form.waist(class="form-control", id="waist") }}
+        </div>
+
+        <div class="mb-3">
+            <label for="inseam" class="form-label">{{ form.inseam.label }}</label>
+            {{ form.inseam(class="form-control", id="inseam") }}
+        </div>
+
+        <div class="mb-3">
+            <label for="head" class="form-label">{{ form.head.label }}</label>
+            {{ form.head(class="form-control", id="head") }}
+        </div>
+
+        <div class="mb-3">
+            <label for="neck_circumference" class="form-label">{{ form.neck_circumference.label }}</label>
+            {{ form.neck_circumference(class="form-control", id="neck_circumference") }}
+        </div>
+
+        <div class="mb-3">
+            <label for="shoulder_width" class="form-label">{{ form.shoulder_width.label }}</label>
+            {{ form.shoulder_width(class="form-control", id="shoulder_width") }}
+        </div>
+
+        <div class="mb-3">
+            <label for="sleeve_length" class="form-label">{{ form.sleeve_length.label }}</label>
+            {{ form.sleeve_length(class="form-control", id="sleeve_length") }}
+        </div>
+
+        <div class="mb-3">
+            <label for="buba_length" class="form-label">{{ form.buba_length.label }}</label>
+            {{ form.buba_length(class="form-control", id="buba_length") }}
+        </div>
+
+        {{ form.submit(class="btn btn-success") }}
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Admin Dashboard</h2>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role }}</td>
+                <td>
+                    <a href="{{ url_for('app_routes.admin_view_user', user_id=user.id) }}" class="btn btn-info btn-sm">
+                        View Profile
+                    </a>
+                    <a href="{{ url_for('app_routes.edit_user', user_id=user.id) }}" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="{{ url_for('app_routes.delete_user', user_id=user.id) }}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ url_for('app_routes.profile') }}" class="btn btn-secondary mt-3">Back to Profile</a>
+</div>
+{% endblock %}

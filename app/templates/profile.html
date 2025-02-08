@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Welcome, {{ current_user.email }}</h2>
+    <p>Your role: {{ current_user.role }}</p>
+
+    <h3>Your Measurements</h3>
+    {% if current_user.measurements %}
+        <ul class="list-group">
+            {% for measurement in current_user.measurements %}
+                <li class="list-group-item">
+                    <strong>Chest:</strong> {{ measurement.chest }} in,
+                    <strong>Waist:</strong> {{ measurement.waist }} in,
+                    <strong>Inseam:</strong> {{ measurement.inseam }} in,
+                    <strong>Head:</strong> {{ measurement.head }} in,
+                    <strong>Neck Circumference:</strong> {{ measurement.neck_circumference }} in,
+                    <strong>Shoulder Width:</strong> {{ measurement.shoulder_width }} in,
+                    <strong>Sleeve Length:</strong> {{ measurement.sleeve_length }} in,
+                    <strong>Buba Length:</strong> {{ measurement.buba_length }} in
+                    <br><small>Added on: {{ measurement.date_added.strftime('%Y-%m-%d') }}</small>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You haven't added any measurements yet.</p>
+    {% endif %}
+
+    <h3>Add or Update Measurements</h3>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.chest.label }} {{ form.chest(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.waist.label }} {{ form.waist(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.inseam.label }} {{ form.inseam(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.head.label }} {{ form.head(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.neck_circumference.label }} {{ form.neck_circumference(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.shoulder_width.label }} {{ form.shoulder_width(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.sleeve_length.label }} {{ form.sleeve_length(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.buba_length.label }} {{ form.buba_length(class="form-control") }}
+        </div>
+        <button type="submit" class="btn btn-primary">Save Measurements</button>
+    </form>
+
+    <a href="{{ url_for('app_routes.logout') }}" class="btn btn-danger mt-3">Logout</a>
+</div>
+{% endblock %}

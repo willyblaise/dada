@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ user.email }} Profile</h2>
+    <p>Role: {{ user.role }}</p>
+
+    <h3>User Measurements</h3>
+    {% if user.measurements %}
+        <ul class="list-group">
+            {% for measurement in user.measurements %}
+                <li class="list-group-item">
+                    <strong>Chest:</strong> {{ measurement.chest }} in,
+                    <strong>Waist:</strong> {{ measurement.waist }} in,
+                    <strong>Inseam:</strong> {{ measurement.inseam }} in,
+                    <strong>Head:</strong> {{ measurement.head }} in,
+                    <strong>Shoulder Width:</strong> {{ measurement.shoulder_width }} in,
+                    <strong>Sleeve Length:</strong> {{ measurement.sleeve_length }} in,
+                    <strong>Buba Length:</strong> {{ measurement.buba_length }} in,
+                    <strong>Neck Circumference:</strong> {{ measurement.neck_circumference }} in
+                    <br><small>Added on: {{ measurement.date_added.strftime('%Y-%m-%d') }}</small>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No measurements found.</p>
+    {% endif %}
+
+    <a href="{{ url_for('app_routes.admin_dashboard') }}" class="btn btn-secondary mt-3">Back to Admin Dashboard</a>
+</div>
+{% endblock %}
