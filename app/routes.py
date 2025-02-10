@@ -1,4 +1,4 @@
-from flask import render_template, url_for, redirect, flash, Blueprint
+from flask import render_template, url_for, redirect, flash, Blueprint, request
 from . import db  # Import app and db from the app package
 from app.models import User, Measurement
 from app.forms import RegistrationForm, MeasurementForm, LoginForm, UserEditForm
@@ -122,17 +122,41 @@ def send_confirmation_email(user, token):
     mail.send(msg)
 
 
+#@app_routes.route("/profile", methods=['GET', 'POST'])
+#@login_required
+#def profile():
+#    form = MeasurementForm()  # Ensure form is instantiated
+#
+#    if form.validate_on_submit():
+#        measurement = Measurement(
+#            chest=form.chest.data,
+#            waist=form.waist.data,
+#            inseam=form.inseam.data,
+#            head=form.head.data,  # Ensure this field exists in your model
+#            neck_circumference=form.neck_circumference.data,
+#            shoulder_width=form.shoulder_width.data,
+#            sleeve_length=form.sleeve_length.data,
+#            buba_length=form.buba_length.data,
+#            user_id=current_user.id
+#        )
+#        db.session.add(measurement)
+#        db.session.commit()
+#        flash("Your measurements have been saved!", "success")
+#        return redirect(url_for("app_routes.profile"))  # Redirect to avoid re-submission
+#
+#    return render_template("profile.html", title="Profile", form=form)  # Ensure form is passed
+
 @app_routes.route("/profile", methods=['GET', 'POST'])
 @login_required
 def profile():
-    form = MeasurementForm()  # Ensure form is instantiated
+    form = MeasurementForm()
 
     if form.validate_on_submit():
         measurement = Measurement(
             chest=form.chest.data,
             waist=form.waist.data,
             inseam=form.inseam.data,
-            head=form.head.data,  # Ensure this field exists in your model
+            head=form.head.data,
             neck_circumference=form.neck_circumference.data,
             shoulder_width=form.shoulder_width.data,
             sleeve_length=form.sleeve_length.data,
@@ -142,9 +166,13 @@ def profile():
         db.session.add(measurement)
         db.session.commit()
         flash("Your measurements have been saved!", "success")
-        return redirect(url_for("app_routes.profile"))  # Redirect to avoid re-submission
+        return redirect(url_for("app_routes.profile"))
 
-    return render_template("profile.html", title="Profile", form=form)  # Ensure form is passed
+    elif request.method == "POST":  # Form was submitted but validation failed
+        flash("There was an error with your submission. Please check your inputs.", "danger")
+
+    return render_template("profile.html", title="Profile", form=form)
+
 
 
 @app_routes.route("/admin", methods=['GET', 'POST'])
