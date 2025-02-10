@@ -2,7 +2,7 @@ from flask import render_template, url_for, redirect, flash, Blueprint
 from . import db  # Import app and db from the app package
 from app.models import User, Measurement
 from app.forms import RegistrationForm, MeasurementForm, LoginForm, UserEditForm
-from flask_login import login_user, current_user, logout_user, login_required
+from flask_login import login_user, current_user, logout_user, login_required, fresh_login_required
 from flask_mail import Message
 from app import mail
 #from flask_bcrypt import Bcrypt
@@ -148,7 +148,7 @@ def profile():
 
 
 @app_routes.route("/admin", methods=['GET', 'POST'])
-@login_required
+@fresh_login_required
 def admin():
     if not getattr(current_user, "is_admin", False):  # Safely check is_admin
         flash("You do not have permission to access this page.", "danger")
