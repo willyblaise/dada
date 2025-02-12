@@ -185,23 +185,6 @@ def admin():
     users = User.query.all()
     return render_template('admin_dashboard.html', title='Admin Dashboard', users=users)
 
-#@app_routes.route("/edit_user/<int:user_id>", methods=['GET', 'POST'])
-#@login_required
-#def edit_user(user_id):
-#    if current_user.role != 'admin':  # Ensure the user is an admin
-#        return redirect(url_for('app_routes.profile'))
-#
-#    user = User.query.get_or_404(user_id)
-#    form = UserEditForm(obj=user)  # Assuming UserEditForm is used for editing user fields
-#
-#    if form.validate_on_submit():
-#        user.email = form.email.data
-#        user.password = form.password.data  # Don't forget to hash passwords in production
-#        db.session.commit()
-#        flash('User details updated successfully', 'success')
-#        return redirect(url_for('app_routes.admin'))  # Redirect back to admin dashboard
-#
-#    return render_template('edit_user.html', title='Edit User', form=form, user=user)
 
 @app_routes.route("/edit_user/<int:user_id>", methods=['GET', 'POST'])
 @login_required
