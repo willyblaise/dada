@@ -1,19 +1,24 @@
-from flask import render_template, url_for, redirect, flash, Blueprint, request
+from flask import render_template, url_for, redirect, flash, Blueprint, request, current_app
 from . import db  # Import app and db from the app package
 from app.models import User, Measurement
 from app.forms import RegistrationForm, MeasurementForm, LoginForm, UserEditForm
 from flask_login import login_user, current_user, logout_user, login_required, fresh_login_required
 from flask_mail import Message
-from app import mail
+#from app import mail
 #from flask_bcrypt import Bcrypt
 from flask import Blueprint
-from app import db, bcrypt
+from app import db, bcrypt, mail
+from itsdangerous import URLSafeTimedSerializer
+#from config import Config
+
 
 
 # Create a Blueprint for the routes
 app_routes = Blueprint('app_routes', __name__)
 
-#bcrypt = Bcrypt(app)
+def get_serializer():
+    """Create a serializer instance using the app's SECRET_KEY."""
+    return URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
 
 
 # Home route
@@ -198,8 +203,9 @@ def edit_user(user_id):
     if form.validate_on_submit():
         print("Form validated successfully")
         user.email = form.email.data
-        user.password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        print("User object updated")
+        if form.password.data:
+            user.password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            print("User object updated")
         try:
             db.session.commit()
             print("Database changes committed")
@@ -250,3 +256,58 @@ def admin_dashboard():
     if current_user.role != 'admin':
         return redirect(url_for('app_routes.profile'))
     return render_template('admin_dashboard.html')
+
+
+@app_routes.route("/forgot_password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email")
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+            serializer = get_serializer()  # ✅ Get the serializer instance
+            token = serializer.dumps(email, salt='password-reset-salt')
+            reset_url = url_for('app_routes.reset_password', token=token, _external=True)
+
+            # Send email with reset link
+            msg = Message("Password Reset Request", sender="wpitts@gmail.com", recipients=[email])
+            msg.body = f"Click the link to reset your password: {reset_url}"
+            mail.send(msg)
+
+            flash("Password reset link has been sent to your email", "info")
+            return redirect(url_for("app_routes.login"))
+
+        flash("Email not found", "danger")
+
+    return render_template("forgot_password.html")
+
+
+@app_routes.route("/reset_password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    serializer = get_serializer()
+    try:
+        email = serializer.loads(token, salt='password-reset-salt', max_age=3600)  # Token valid for 1 hour
+    except:
+        flash("Invalid or expired token", "danger")
+        return redirect(url_for("app_routes.login"))
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        flash("User not found", "danger")
+        return redirect(url_for("app_routes.login"))
+
+    if request.method == "POST":
+        new_password = request.form.get("password")
+        confirm_password = request.form.get("confirm_password")
+
+        if new_password != confirm_password:
+            flash("Passwords do not match", "danger")
+            return redirect(url_for("app_routes.reset_password", token=token))
+
+        user.password = bcrypt.generate_password_hash(new_password).decode("utf-8")
+        db.session.commit()
+
+        flash("Your password has been updated!", "success")
+        return redirect(url_for("app_routes.login"))
+
+    return render_template("reset_password.html", token=token)
